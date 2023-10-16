@@ -10,8 +10,6 @@ export async function usersRoutes(app: FastifyInstance): Promise<void> {
     '/',
     { preHandler: [ensureReqBodyIsFilled] },
     async (req: FastifyRequest, rep: FastifyReply): Promise<void> => {
-      console.log(req.body);
-
       const userInfo = createUserBodySchema.safeParse(req.body);
 
       if (!userInfo.success) {
