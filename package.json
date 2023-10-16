@@ -1,0 +1,60 @@
+{
+  "name": "daily-diet-api",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "description": "API of the Daily Diet application, which will be responsible for the notes and reminders of the care we take with our free meals and diet",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsup src",
+    "dev": "tsx watch src/server.ts",
+    "knex": "node --no-warnings --loader tsx ./node_modules/.bin/knex",
+    "knexWin": "node --no-warnings --loader tsx ./node_modules/knex/bin/cli.js",
+    "lint": "eslint \"./src/**/*.ts\" -c .eslintrc.json --fix",
+    "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eddyyxxyy/daily-diet-api.git"
+  },
+  "keywords": [
+    "api",
+    "node",
+    "typescript",
+    "knex",
+    "jwt",
+    "fastify"
+  ],
+  "author": "Edson Pimenta <dev.eddyyxxyy@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eddyyxxyy/daily-diet-api/issues"
+  },
+  "homepage": "https://github.com/eddyyxxyy/daily-diet-api#readme",
+  "devDependencies": {
+    "@types/node": "^20.8.6",
+    "@types/supertest": "^2.0.14",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "eslint": "^8.51.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "prettier": "^3.0.3",
+    "sqlite3": "^5.1.6",
+    "supertest": "^6.3.3",
+    "tsup": "^7.2.0",
+    "tsx": "^3.13.0",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.6"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^9.1.0",
+    "dotenv": "^16.3.1",
+    "fastify": "^4.24.2",
+    "knex": "^3.0.1",
+    "pg": "^8.11.3",
+    "zod": "^3.22.4"
+  }
+}
