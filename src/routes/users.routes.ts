@@ -4,24 +4,24 @@ import { hash, genSalt } from 'bcrypt';
 import { ensureReqBodyIsFilled } from '../middlewares/ensureReqBodyIsFilled';
 import { createUserBodySchema } from '../schemas';
 import { conn } from '../database';
+import { handleRequestBodySchema } from '../utils/handleRequestBodySchema';
 
 export async function usersRoutes(app: FastifyInstance): Promise<void> {
   app.post(
     '/',
     { preHandler: [ensureReqBodyIsFilled] },
     async (req: FastifyRequest, rep: FastifyReply): Promise<void> => {
-      const userInfo = createUserBodySchema.safeParse(req.body);
+      const newUserInfo = handleRequestBodySchema<{
+        name: string;
+        email: string;
+        password: string;
+      }>(createUserBodySchema)(req, rep);
 
-      if (!userInfo.success) {
-        const errors = userInfo.error.issues.map((issue) => ({
-          field: issue.path,
-          message: issue.message,
-        }));
-
-        return rep.status(400).send({ errors });
+      if (newUserInfo === null) {
+        return;
       }
 
-      const { name, email, password } = userInfo.data;
+      const { name, email, password } = newUserInfo;
 
       const userExists = await conn('users').where({ email }).first();
 
