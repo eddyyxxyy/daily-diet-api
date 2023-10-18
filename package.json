@@ -13,6 +13,7 @@
     "knex": "node --no-warnings --loader tsx ./node_modules/.bin/knex",
     "knexWin": "node --no-warnings --loader tsx ./node_modules/knex/bin/cli.js",
     "lint": "eslint \"./src/**/*.ts\" -c .eslintrc.json --fix",
+    "prepare": "husky install",
     "test": "vitest"
   },
   "repository": {
@@ -34,6 +35,8 @@
   },
   "homepage": "https://github.com/eddyyxxyy/daily-diet-api#readme",
   "devDependencies": {
+    "@commitlint/cli": "^17.8.0",
+    "@commitlint/config-conventional": "^17.8.0",
     "@types/bcrypt": "^5.0.0",
     "@types/node": "^20.8.6",
     "@types/supertest": "^2.0.14",
@@ -42,6 +45,7 @@
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "husky": "^8.0.3",
     "prettier": "^3.0.3",
     "sqlite3": "^5.1.6",
     "supertest": "^6.3.3",
@@ -52,6 +56,7 @@
   },
   "dependencies": {
     "@fastify/cookie": "^9.1.0",
+    "@fastify/jwt": "^7.2.2",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.3.1",
     "fastify": "^4.24.2",
