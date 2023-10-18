@@ -22,18 +22,11 @@ declare module 'knex/types/tables' {
   }
 
   export interface Tables {
-    users: Knex.CompositeTableType<
-      User,
-      Pick<User, 'name' | 'email' | 'password'>,
-      Pick<User, 'name' | 'email' | 'password'>
-    >;
+    users: Knex.CompositeTableType<User, Omit<User, 'id'>, Omit<User, 'id'>>;
     meals: Knex.CompositeTableType<
       Meal,
-      Pick<Meal, 'name' | 'description' | 'date' | 'hour' | 'isOnTheDiet'>,
-      Pick<
-        Meal,
-        'name' | 'description' | 'date' | 'hour' | 'isOnTheDiet' | 'modifiedAt'
-      >
+      Omit<Meal, 'id' | 'createdAt' | 'modifiedAt'>,
+      Omit<Meal, 'id' | 'createdAt' | 'userId'>
     >;
   }
 }
