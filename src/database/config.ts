@@ -12,6 +12,7 @@ const development: Knex.Config = {
     max: 10,
     idleTimeoutMillis: 30000,
     acquireTimeoutMillis: 30000,
+    // eslint-disable-next-line
     afterCreate: (conn: any, cb: (error: Error | null) => void) =>
       conn.run('PRAGMA foreign_keys = ON', cb),
   },
