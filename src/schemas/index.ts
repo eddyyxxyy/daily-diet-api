@@ -13,7 +13,7 @@ export const createUserBodySchema = z.object({
       invalid_type_error: 'E-mail must be a string',
     })
     .email()
-    .min(3, 'E-mail is required'),
+    .min(5, 'E-mail is required'),
   password: z
     .string({
       required_error: 'Password is required',
@@ -27,4 +27,20 @@ export const createUserBodySchema = z.object({
           "Passwords must have at least one lower-case letter, one upper-case letter, one number and one of the following special characters '!@#%'",
       },
     ),
+});
+
+export const createSessionBodySchema = z.object({
+  email: z
+    .string({
+      required_error: 'E-mail is required',
+      invalid_type_error: 'E-mail must be a string',
+    })
+    .email()
+    .min(5, 'E-mail is required'),
+  password: z
+    .string({
+      required_error: 'Password is required',
+      invalid_type_error: 'Password must be a string',
+    })
+    .min(6, { message: 'Passwords must be at least 6 characters long' }),
 });
