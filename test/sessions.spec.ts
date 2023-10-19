@@ -1,11 +1,9 @@
-import { genSalt, hash } from 'bcrypt';
 import { execSync } from 'child_process';
 import { platform } from 'os';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { app } from '../src/app';
-import { conn } from '../src/database';
 
 describe('sessions routes', async () => {
   beforeAll(async () => await app.ready());
@@ -29,15 +27,9 @@ describe('sessions routes', async () => {
       password: '123@Test',
     };
 
-    const hashedPassword = await hash(
-      userToBeCreated.password,
-      await genSalt(10),
-    );
-
-    await conn('users').insert({
-      ...userToBeCreated,
-      password: hashedPassword,
-    });
+    await request(app.server)
+      .post('/users')
+      .send({ ...userToBeCreated });
 
     const response = await request(app.server).post('/sessions').send({
       email: userToBeCreated.email,
@@ -57,15 +49,9 @@ describe('sessions routes', async () => {
       password: '123@Test',
     };
 
-    const hashedPassword = await hash(
-      userToBeCreated.password,
-      await genSalt(10),
-    );
-
-    await conn('users').insert({
-      ...userToBeCreated,
-      password: hashedPassword,
-    });
+    await request(app.server)
+      .post('/users')
+      .send({ ...userToBeCreated });
 
     const {
       body: { token },
