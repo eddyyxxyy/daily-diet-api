@@ -11,11 +11,10 @@ export async function usersRoutes(app: FastifyInstance): Promise<void> {
     '/',
     { preHandler: [ensureReqBodyIsFilled] },
     async (req: FastifyRequest, rep: FastifyReply): Promise<void> => {
-      const newUserInfo = handleRequestBodySchema<{
-        name: string;
-        email: string;
-        password: string;
-      }>(createUserBodySchema)(req, rep);
+      const newUserInfo = handleRequestBodySchema(createUserBodySchema)(
+        req,
+        rep,
+      );
 
       if (newUserInfo === null) {
         return;

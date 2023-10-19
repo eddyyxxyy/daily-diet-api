@@ -13,10 +13,10 @@ export async function sessionsRoutes(app: FastifyInstance) {
     '/',
     { preHandler: [ensureReqBodyIsFilled] },
     async (req: FastifyRequest, rep: FastifyReply) => {
-      const userInfo = handleRequestBodySchema<{
-        email: string;
-        password: string;
-      }>(createSessionBodySchema)(req, rep);
+      const userInfo = handleRequestBodySchema(createSessionBodySchema)(
+        req,
+        rep,
+      );
 
       if (userInfo === null) {
         return;
@@ -56,7 +56,7 @@ export async function sessionsRoutes(app: FastifyInstance) {
         });
       }
 
-      return rep.status(200).send({ token });
+      return rep.status(201).send({ token });
     },
   );
 
