@@ -1,7 +1,7 @@
 import knex, { Knex } from 'knex';
 
-import { development, production } from './config';
 import { env } from '../env';
+import { development, production } from './config';
 
 const connConfig = env.NODE_ENV === 'production' ? production : development;
 

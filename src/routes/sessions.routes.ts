@@ -1,12 +1,12 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { compare } from 'bcrypt';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
-import { ensureReqBodyIsFilled } from '../middlewares/ensureReqBodyIsFilled';
-import { verifyJWT } from '../middlewares/ensureAuthenticated';
-import { handleRequestBodySchema } from '../utils/handleRequestBodySchema';
-import { createSessionBodySchema } from '../schemas';
 import { conn } from '../database';
 import { env } from '../env';
+import { verifyJWT } from '../middlewares/ensureAuthenticated';
+import { ensureReqBodyIsFilled } from '../middlewares/ensureReqBodyIsFilled';
+import { createSessionBodySchema } from '../schemas';
+import { handleRequestBodySchema } from '../utils/handleRequestBodySchema';
 
 export async function sessionsRoutes(app: FastifyInstance) {
   app.post(

@@ -1,4 +1,4 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
 export async function ensureReqBodyIsFilled(
   req: FastifyRequest,

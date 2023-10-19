@@ -1,9 +1,9 @@
+import { genSalt, hash } from 'bcrypt';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { hash, genSalt } from 'bcrypt';
 
+import { conn } from '../database';
 import { ensureReqBodyIsFilled } from '../middlewares/ensureReqBodyIsFilled';
 import { createUserBodySchema } from '../schemas';
-import { conn } from '../database';
 import { handleRequestBodySchema } from '../utils/handleRequestBodySchema';
 
 export async function usersRoutes(app: FastifyInstance): Promise<void> {

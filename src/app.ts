@@ -1,11 +1,11 @@
-import fastify from 'fastify';
 import cookie from '@fastify/cookie';
 import fastifyJwt from '@fastify/jwt';
+import fastify from 'fastify';
 import { FastifyInstance } from 'fastify/types/instance';
 
-import { usersRoutes } from './routes/users.routes';
-import { sessionsRoutes } from './routes/sessions.routes';
 import { env } from './env';
+import { sessionsRoutes } from './routes/sessions.routes';
+import { usersRoutes } from './routes/users.routes';
 
 export const app: FastifyInstance = fastify();
 

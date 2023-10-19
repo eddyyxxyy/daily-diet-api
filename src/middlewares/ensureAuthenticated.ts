@@ -1,4 +1,4 @@
-import { FastifyRequest, FastifyReply, DoneFuncWithErrOrRes } from 'fastify';
+import { DoneFuncWithErrOrRes, FastifyReply, FastifyRequest } from 'fastify';
 
 export async function verifyJWT(
   req: FastifyRequest,
