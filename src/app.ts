@@ -4,6 +4,7 @@ import fastify from 'fastify';
 import { FastifyInstance } from 'fastify/types/instance';
 
 import { env } from './env';
+import { mealsRoutes } from './routes/meals.routes';
 import { sessionsRoutes } from './routes/sessions.routes';
 import { usersRoutes } from './routes/users.routes';
 
@@ -19,4 +20,7 @@ app.register(usersRoutes, {
 });
 app.register(sessionsRoutes, {
   prefix: 'sessions',
+});
+app.register(mealsRoutes, {
+  prefix: 'meals',
 });
