@@ -44,7 +44,7 @@ describe('sessions routes', async () => {
       password: userToBeCreated.password,
     });
 
-    expect(response.statusCode).toEqual(200);
+    expect(response.statusCode).toEqual(201);
     expect(response.body).toHaveProperty('token');
     expect(typeof response.body.token).toBe('string');
     expect(response.body.token).not.toBe('');
