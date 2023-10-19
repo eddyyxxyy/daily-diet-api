@@ -1,8 +1,8 @@
-import { platform } from 'node:os';
 import { execSync } from 'node:child_process';
+import { platform } from 'node:os';
 
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { app } from '../src/app';
 
