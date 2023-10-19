@@ -19,7 +19,9 @@ export const createUserBodySchema = z.object({
       required_error: 'Password is required',
       invalid_type_error: 'Password must be a string',
     })
-    .min(6, { message: 'Passwords must be at least 6 characters long' })
+    .min(6, {
+      message: 'Passwords must be at least 6 and at max 32 characters long',
+    })
     .regex(
       /^(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=\D*\d)(?=[^!#@%]*[!#@%])[A-Za-z0-9!#@%]{6,32}$/,
       {
@@ -36,11 +38,44 @@ export const createSessionBodySchema = z.object({
       invalid_type_error: 'E-mail must be a string',
     })
     .email()
-    .min(5, 'E-mail is required'),
+    .min(1, 'E-mail is required'),
   password: z
     .string({
       required_error: 'Password is required',
       invalid_type_error: 'Password must be a string',
     })
     .min(6, { message: 'Passwords must be at least 6 characters long' }),
+});
+
+export const createMealBodySchema = z.object({
+  name: z
+    .string({
+      required_error: 'Name is required',
+      invalid_type_error: 'Name must be a string',
+    })
+    .min(1, 'Name is required')
+    .max(60, "Meal's names must be at max 60 characters long"),
+  description: z
+    .string({
+      required_error: 'Description is required',
+      invalid_type_error: 'Description must be a string',
+    })
+    .min(1, 'Description is required')
+    .max(255, "Meal's descriptions must be at max 255 characters long"),
+  date: z
+    .string({
+      required_error: 'Date is required',
+      invalid_type_error: 'Date must be a string',
+    })
+    .min(1, 'Date is required'),
+  hour: z
+    .string({
+      required_error: 'Hour is required',
+      invalid_type_error: 'Hour must be a string',
+    })
+    .min(1, 'Hour is required'),
+  isOnTheDiet: z.boolean({
+    required_error: 'IsOnTheDiet is required',
+    invalid_type_error: 'IsOnTheDiet must be boolean',
+  }),
 });
