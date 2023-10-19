@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  NODE_ENV: "test"
+  DATABASE_CLIENT: "sqlite3"
+  DATABASE_URL: "./src/database/test.db"
+  PORT: "3334"
+  JWT_SECRET: "supersecret"
+
 jobs:
   build:
     runs-on: ubuntu-latest
