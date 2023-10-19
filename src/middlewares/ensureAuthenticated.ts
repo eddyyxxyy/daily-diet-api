@@ -1,13 +1,8 @@
-import { DoneFuncWithErrOrRes, FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
-export async function verifyJWT(
-  req: FastifyRequest,
-  rep: FastifyReply,
-  done: DoneFuncWithErrOrRes,
-) {
+export async function verifyJWT(req: FastifyRequest, rep: FastifyReply) {
   try {
     await req.jwtVerify();
-    done();
   } catch (err) {
     return rep.status(401).send({ error: 'Unauthorized' });
   }
