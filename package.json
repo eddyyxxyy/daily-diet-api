@@ -14,7 +14,7 @@
     "knexWin": "node --no-warnings --loader tsx ./node_modules/knex/bin/cli.js",
     "lint": "eslint \"./src/**/*.ts\" -c .eslintrc.json --fix",
     "prepare": "husky install",
-    "test": "vitest"
+    "test": "vitest --reporter verbose"
   },
   "repository": {
     "type": "git",
