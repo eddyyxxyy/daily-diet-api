@@ -37,10 +37,36 @@ export async function sessionsRoutes(app: FastifyInstance) {
       }
 
       const tokenPayload = { id: user.id, name: user.name, email: user.email };
-      const token = await rep.jwtSign(tokenPayload, { expiresIn: '900s' });
+
+      const accessToken = await rep.jwtSign(
+        { ...tokenPayload, type: 'access' },
+        {
+          expiresIn: '900s',
+        },
+      );
+
+      const refreshToken = await rep.jwtSign(
+        { ...tokenPayload, type: 'refresh' },
+        {
+          expiresIn: '1800s',
+        },
+      );
+
+      const { id: userId } = user;
+
+      await conn('tokens').delete().where({ userId });
+
+      const expiryDate = new Date();
+      expiryDate.setSeconds(expiryDate.getSeconds() + 1800); // Adds 30 minutes
+
+      await conn('tokens').insert({
+        token: refreshToken,
+        expiry: expiryDate.toISOString(),
+        userId,
+      });
 
       if (env.NODE_ENV === 'production') {
-        rep.setCookie('@daily-diet:', token, {
+        rep.setCookie('@daily-diet:accessToken', accessToken, {
           domain: '*',
           path: '/',
           httpOnly: true,
@@ -48,17 +74,111 @@ export async function sessionsRoutes(app: FastifyInstance) {
           sameSite: 'none',
           maxAge: 900, // 15 minutes
         });
+
+        rep.setCookie('@daily-diet:refreshToken', refreshToken, {
+          domain: '*',
+          path: '/',
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          maxAge: 1800, // 30 minutes
+        });
       } else {
-        rep.setCookie('@daily-diet:', token, {
+        rep.setCookie('@daily-diet:accessToken', accessToken, {
           path: '/',
           httpOnly: true,
           maxAge: 900, // 15 minutes
         });
+
+        rep.setCookie('@daily-diet:refreshToken', refreshToken, {
+          path: '/',
+          httpOnly: true,
+          maxAge: 1800, // 30 minutes
+        });
       }
 
-      return rep.status(201).send({ token });
+      return rep.status(201).send();
     },
   );
+
+  app.post('/refresh', async (req: FastifyRequest, rep: FastifyReply) => {
+    const refreshToken = req.cookies['@daily-diet:refreshToken'];
+
+    let tokenPayload;
+
+    try {
+      req.headers.authorization = `Bearer ${refreshToken}`;
+      tokenPayload = await req.jwtVerify();
+    } catch (err) {
+      return rep.status(401).send({ error: 'Invalid refresh token.' });
+    }
+
+    const registeredRefreshToken = await conn('tokens')
+      .where({
+        token: refreshToken,
+      })
+      .first();
+
+    if (!registeredRefreshToken) {
+      return rep.status(401).send({ error: 'Invalid Refresh Token' });
+    }
+
+    const accessToken = await rep.jwtSign(
+      { ...(tokenPayload as object), type: 'access' },
+      {
+        expiresIn: '900s',
+      },
+    );
+
+    const refreshedToken = await rep.jwtSign(
+      { ...(tokenPayload as object), type: 'refresh' },
+      {
+        expiresIn: '1800s',
+      },
+    );
+
+    await conn('tokens')
+      .update({
+        token: refreshedToken,
+        expiry: registeredRefreshToken.expiry,
+        userId: registeredRefreshToken.userId,
+      })
+      .where({ id: registeredRefreshToken.id });
+
+    if (env.NODE_ENV === 'production') {
+      rep.setCookie('@daily-diet:accessToken', accessToken, {
+        domain: '*',
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: 900, // 15 minutes
+      });
+
+      rep.setCookie('@daily-diet:refreshToken', refreshedToken, {
+        domain: '*',
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: 1800, // 30 minutes
+      });
+    } else {
+      rep.setCookie('@daily-diet:accessToken', accessToken, {
+        path: '/',
+        httpOnly: true,
+        maxAge: 900, // 15 minutes
+      });
+
+      rep.setCookie('@daily-diet:refreshToken', refreshedToken, {
+        path: '/',
+        httpOnly: true,
+        maxAge: 1800, // 30 minutes
+      });
+    }
+
+    return rep.status(201).send();
+  });
 
   app.get(
     '/',
