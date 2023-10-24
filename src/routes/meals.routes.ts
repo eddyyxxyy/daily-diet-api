@@ -12,6 +12,14 @@ export async function mealsRoutes(app: FastifyInstance) {
     '/',
     { preHandler: [ensureReqBodyIsFilled, verifyJWT] },
     async (req: FastifyRequest, rep: FastifyReply) => {
+      const userInfo = req.user as IAuthenticatedUser;
+
+      const user = await conn('users').where({ id: userInfo.id }).first();
+
+      if (!user) {
+        return rep.status(400).send({ error: 'Invalid user.' });
+      }
+
       const meal = handleRequestBodySchema(createMealBodySchema)(req, rep);
 
       if (meal === null) {
@@ -37,7 +45,7 @@ export async function mealsRoutes(app: FastifyInstance) {
         date,
         hour,
         isOnTheDiet,
-        userId: (req.user as IAuthenticatedUser).id,
+        userId: user.id,
       });
 
       return rep.status(201).send();
