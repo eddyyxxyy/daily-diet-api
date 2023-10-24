@@ -21,6 +21,13 @@ declare module 'knex/types/tables' {
     userId: string;
   }
 
+  interface Token {
+    id: string;
+    token: string;
+    userId: string;
+    expiry: string;
+  }
+
   export interface Tables {
     users: Knex.CompositeTableType<User, Omit<User, 'id'>, Omit<User, 'id'>>;
     meals: Knex.CompositeTableType<
@@ -28,5 +35,6 @@ declare module 'knex/types/tables' {
       Omit<Meal, 'id' | 'createdAt' | 'modifiedAt'>,
       Omit<Meal, 'id' | 'createdAt' | 'userId'>
     >;
+    tokens: Knex.CompositeTableType<Token, Omit<Token, 'id'>>;
   }
 }
