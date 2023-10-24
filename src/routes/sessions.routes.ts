@@ -37,7 +37,7 @@ export async function sessionsRoutes(app: FastifyInstance) {
       }
 
       const tokenPayload = { id: user.id, name: user.name, email: user.email };
-      const token = await rep.jwtSign(tokenPayload);
+      const token = await rep.jwtSign(tokenPayload, { expiresIn: '900s' });
 
       if (env.NODE_ENV === 'production') {
         rep.setCookie('@daily-diet:', token, {
@@ -46,13 +46,13 @@ export async function sessionsRoutes(app: FastifyInstance) {
           httpOnly: true,
           secure: true,
           sameSite: 'none',
-          maxAge: 1000 * 60 * 60 * 24, // 1 day
+          maxAge: 900, // 15 minutes
         });
       } else {
         rep.setCookie('@daily-diet:', token, {
           path: '/',
           httpOnly: true,
-          maxAge: 1000 * 60 * 60 * 24, // 1 day
+          maxAge: 900, // 15 minutes
         });
       }
 
