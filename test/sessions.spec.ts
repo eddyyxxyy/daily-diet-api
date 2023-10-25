@@ -37,9 +37,6 @@ describe('sessions routes', async () => {
     });
 
     expect(response.statusCode).toEqual(201);
-    expect(response.body).toHaveProperty('token');
-    expect(typeof response.body.token).toBe('string');
-    expect(response.body.token).not.toBe('');
   });
 
   it('should be able to get user info with session token', async () => {
@@ -53,11 +50,17 @@ describe('sessions routes', async () => {
       .post('/users')
       .send({ ...userToBeCreated });
 
-    const {
-      body: { token },
-    } = await request(app.server).post('/sessions').send({
+    const requestResponse = await request(app.server).post('/sessions').send({
       email: userToBeCreated.email,
       password: userToBeCreated.password,
+    });
+
+    let token = '';
+    requestResponse.get('Set-Cookie').forEach((cookie) => {
+      if (cookie.startsWith('@daily-diet:accessToken')) {
+        const notSanitizedToken = cookie.split(';')[0];
+        token = notSanitizedToken.split('=')[1];
+      }
     });
 
     const getUserInfoResponse = await request(app.server)

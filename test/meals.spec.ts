@@ -32,11 +32,17 @@ describe('meals routes', async () => {
       .post('/users')
       .send({ ...userToBeCreated });
 
-    const {
-      body: { token },
-    } = await request(app.server).post('/sessions').send({
+    const requestResponse = await request(app.server).post('/sessions').send({
       email: userToBeCreated.email,
       password: userToBeCreated.password,
+    });
+
+    let token = '';
+    requestResponse.get('Set-Cookie').forEach((cookie) => {
+      if (cookie.startsWith('@daily-diet:accessToken')) {
+        const notSanitizedToken = cookie.split(';')[0];
+        token = notSanitizedToken.split('=')[1];
+      }
     });
 
     const mealTobeCreated = {
