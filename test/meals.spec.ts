@@ -61,4 +61,158 @@ describe('meals routes', async () => {
 
     expect(response.statusCode).toEqual(201);
   });
+
+  it('should be able to get all meals', async () => {
+    const userToBeCreated = {
+      name: 'Edson Pimenta',
+      email: 'test@email.com',
+      password: '123@Test',
+    };
+
+    await request(app.server)
+      .post('/users')
+      .send({ ...userToBeCreated });
+
+    const requestResponse = await request(app.server).post('/sessions').send({
+      email: userToBeCreated.email,
+      password: userToBeCreated.password,
+    });
+
+    let token = '';
+    requestResponse.get('Set-Cookie').forEach((cookie) => {
+      if (cookie.startsWith('@daily-diet:accessToken')) {
+        const notSanitizedToken = cookie.split(';')[0];
+        token = notSanitizedToken.split('=')[1];
+      }
+    });
+
+    const firstMealTobeCreated = {
+      name: 'Quarteirão',
+      description:
+        'Um hambúrguer feito com pura carne bovina, envolvida por duas fatias de queijo cheddar, cebola, picles e molhos ketchup e mostarda.',
+      date: '2023-10-19',
+      hour: '18:00:00',
+      isOnTheDiet: false,
+    };
+
+    const secondMealTobeCreated = {
+      name: 'Quarteirão Duplo',
+      description:
+        'Dois hamburgueres feitos com pura carne bovina, envolvida por quatro fatias de queijo cheddar, cebola, picles e molhos ketchup e mostarda.',
+      date: '2023-10-26',
+      hour: '20:00:00',
+      isOnTheDiet: false,
+    };
+
+    await request(app.server)
+      .post('/meals')
+      .set('Authorization', `Bearer ${token}`)
+      .send(firstMealTobeCreated);
+
+    await request(app.server)
+      .post('/meals')
+      .set('Authorization', `Bearer ${token}`)
+      .send(secondMealTobeCreated);
+
+    const allMealsResponse = await request(app.server)
+      .get('/meals/all')
+      .set('Authorization', `Bearer ${token}`);
+
+    const allMealsResponseBody = allMealsResponse.body;
+
+    expect(allMealsResponse.status).toEqual(200);
+    expect(allMealsResponseBody).toMatchObject({
+      meals: [
+        {
+          id: expect.any(String),
+          name: 'Quarteirão',
+          description:
+            'Um hambúrguer feito com pura carne bovina, envolvida por duas fatias de queijo cheddar, cebola, picles e molhos ketchup e mostarda.',
+          date: '2023-10-19',
+          hour: '18:00:00',
+          isOnTheDiet: 0,
+          created_at: expect.any(String),
+          modified_at: null,
+          userId: expect.any(String),
+        },
+        {
+          id: expect.any(String),
+          name: 'Quarteirão Duplo',
+          description:
+            'Dois hamburgueres feitos com pura carne bovina, envolvida por quatro fatias de queijo cheddar, cebola, picles e molhos ketchup e mostarda.',
+          date: '2023-10-26',
+          hour: '20:00:00',
+          isOnTheDiet: 0,
+          created_at: expect.any(String),
+          modified_at: null,
+          userId: expect.any(String),
+        },
+      ],
+    });
+  });
+
+  it('should be able to get a single meal', async () => {
+    const userToBeCreated = {
+      name: 'Edson Pimenta',
+      email: 'test@email.com',
+      password: '123@Test',
+    };
+
+    await request(app.server)
+      .post('/users')
+      .send({ ...userToBeCreated });
+
+    const requestResponse = await request(app.server).post('/sessions').send({
+      email: userToBeCreated.email,
+      password: userToBeCreated.password,
+    });
+
+    let token = '';
+    requestResponse.get('Set-Cookie').forEach((cookie) => {
+      if (cookie.startsWith('@daily-diet:accessToken')) {
+        const notSanitizedToken = cookie.split(';')[0];
+        token = notSanitizedToken.split('=')[1];
+      }
+    });
+
+    const mealTobeCreated = {
+      name: 'Quarteirão',
+      description:
+        'Um hambúrguer feito com pura carne bovina, envolvida por duas fatias de queijo cheddar, cebola, picles e molhos ketchup e mostarda.',
+      date: '2023-10-19',
+      hour: '18:00:00',
+      isOnTheDiet: false,
+    };
+
+    await request(app.server)
+      .post('/meals')
+      .set('Authorization', `Bearer ${token}`)
+      .send(mealTobeCreated);
+
+    const allMealsResponse = await request(app.server)
+      .get('/meals/all')
+      .set('Authorization', `Bearer ${token}`);
+
+    const mealFromGetAllMealsResponse = allMealsResponse.body.meals[0];
+
+    const getSingleMealResponse = await request(app.server)
+      .get(`/meals/${mealFromGetAllMealsResponse.id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(getSingleMealResponse.status).toEqual(200);
+    expect(getSingleMealResponse.body).toMatchObject({
+      meal: {
+        id: expect.any(String),
+        name: 'Quarteirão',
+        description:
+          'Um hambúrguer feito com pura carne bovina, envolvida por duas fatias de queijo cheddar, cebola, picles e molhos ketchup e mostarda.',
+        date: '2023-10-19',
+        hour: '18:00:00',
+        isOnTheDiet: 0,
+        created_at: expect.any(String),
+        modified_at: null,
+        userId: expect.any(String),
+      },
+    });
+  });
 });
