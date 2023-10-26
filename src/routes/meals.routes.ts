@@ -86,4 +86,25 @@ export async function mealsRoutes(app: FastifyInstance) {
       return rep.status(200).send({ meals });
     },
   );
+
+  app.delete<{ Params: { id: string } }>(
+    '/:id',
+    { preHandler: [verifyJWT] },
+    async (
+      req: FastifyRequest<{ Params: { id: string } }>,
+      rep: FastifyReply,
+    ) => {
+      const { id: mealId } = req.params;
+
+      const meal = await conn('meals').where({ id: mealId }).first();
+
+      if (!meal) {
+        return rep.status(400).send({ error: 'Meal not found.' });
+      }
+
+      await conn('meals').delete().where({ id: mealId });
+
+      return rep.status(204).send();
+    },
+  );
 }
