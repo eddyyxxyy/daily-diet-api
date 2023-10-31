@@ -275,4 +275,75 @@ describe('meals routes', async () => {
       error: 'Meal not found.',
     });
   });
+
+  it('should be able to update a meal', async () => {
+    const userToBeCreated = {
+      name: 'Edson Pimenta',
+      email: 'test@email.com',
+      password: '123@Test',
+    };
+
+    await request(app.server)
+      .post('/users')
+      .send({ ...userToBeCreated });
+
+    const requestResponse = await request(app.server).post('/sessions').send({
+      email: userToBeCreated.email,
+      password: userToBeCreated.password,
+    });
+
+    let token = '';
+    requestResponse.get('Set-Cookie').forEach((cookie) => {
+      if (cookie.startsWith('@daily-diet:accessToken')) {
+        const notSanitizedToken = cookie.split(';')[0];
+        token = notSanitizedToken.split('=')[1];
+      }
+    });
+
+    const mealTobeCreated = {
+      name: 'Quarteirão',
+      description:
+        'Um hambúrguer feito com pura carne bovina, envolvida por duas fatias de queijo cheddar, cebola, picles e molhos ketchup e mostarda.',
+      date: '2023-10-19',
+      hour: '18:00:00',
+      isOnTheDiet: false,
+    };
+
+    await request(app.server)
+      .post('/meals')
+      .set('Authorization', `Bearer ${token}`)
+      .send(mealTobeCreated);
+
+    const allMealsResponse = await request(app.server)
+      .get('/meals/all')
+      .set('Authorization', `Bearer ${token}`);
+
+    const mealFromGetAllMealsResponse = allMealsResponse.body.meals[0];
+
+    const updateMealResponse = await request(app.server)
+      .put(`/meals/${mealFromGetAllMealsResponse.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        ...mealTobeCreated,
+        name: 'Updated Quarteirão',
+        date: '2023-10-31',
+      });
+
+    const getUpdatedMealReponse = await request(app.server)
+      .get(`/meals/${mealFromGetAllMealsResponse.id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(updateMealResponse.statusCode).toEqual(204);
+    expect(getUpdatedMealReponse.statusCode).toEqual(200);
+    expect(getUpdatedMealReponse.body.meal).toEqual(
+      expect.objectContaining({
+        name: 'Updated Quarteirão',
+        description:
+          'Um hambúrguer feito com pura carne bovina, envolvida por duas fatias de queijo cheddar, cebola, picles e molhos ketchup e mostarda.',
+        date: '2023-10-31',
+        isOnTheDiet: 0,
+        modified_at: null,
+      }),
+    );
+  });
 });
