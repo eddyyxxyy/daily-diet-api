@@ -79,3 +79,33 @@ export const createMealBodySchema = z.object({
     invalid_type_error: 'IsOnTheDiet must be boolean',
   }),
 });
+
+export const updateMealBodySchema = z.object({
+  name: z
+    .string({
+      invalid_type_error: 'Name must be a string',
+    })
+    .max(60, "Meal's names must be at max 60 characters long")
+    .optional(),
+  description: z
+    .string({
+      invalid_type_error: 'Description must be a string',
+    })
+    .max(255, "Meal's descriptions must be at max 255 characters long")
+    .optional(),
+  date: z
+    .string({
+      invalid_type_error: 'Date must be a string',
+    })
+    .optional(),
+  hour: z
+    .string({
+      invalid_type_error: 'Hour must be a string',
+    })
+    .optional(),
+  isOnTheDiet: z
+    .boolean({
+      invalid_type_error: 'IsOnTheDiet must be boolean',
+    })
+    .optional(),
+});
