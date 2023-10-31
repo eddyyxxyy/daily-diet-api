@@ -4,7 +4,7 @@ import { UserPayload } from '../@types/fastifyJwt';
 import { conn } from '../database';
 import { verifyJWT } from '../middlewares/ensureAuthenticated';
 import { ensureReqBodyIsFilled } from '../middlewares/ensureReqBodyIsFilled';
-import { createMealBodySchema } from '../schemas';
+import { createMealBodySchema, updateMealBodySchema } from '../schemas';
 import { handleRequestBodySchema } from '../utils/handleRequestBodySchema';
 
 export async function mealsRoutes(app: FastifyInstance) {
@@ -103,6 +103,47 @@ export async function mealsRoutes(app: FastifyInstance) {
       }
 
       await conn('meals').delete().where({ id: mealId });
+
+      return rep.status(204).send();
+    },
+  );
+
+  app.put<{ Params: { id: string } }>(
+    '/:id',
+    { preHandler: [verifyJWT] },
+    async (
+      req: FastifyRequest<{ Params: { id: string } }>,
+      rep: FastifyReply,
+    ) => {
+      const { id: mealId } = req.params;
+
+      const meal = await conn('meals').where({ id: mealId }).first();
+
+      if (!meal) {
+        return rep.status(400).send({ error: 'Meal not found.' });
+      }
+
+      let newDataForUpdatedMeal;
+
+      if (req.body) {
+        newDataForUpdatedMeal = handleRequestBodySchema(updateMealBodySchema)(
+          req,
+          rep,
+        );
+      }
+
+      const updatedMeal = {
+        ...newDataForUpdatedMeal,
+        name: newDataForUpdatedMeal?.name || meal.name,
+        description: newDataForUpdatedMeal?.description || meal.description,
+        date: newDataForUpdatedMeal?.date || meal.date,
+        hour: newDataForUpdatedMeal?.hour || meal.hour,
+        isOnTheDiet: newDataForUpdatedMeal?.isOnTheDiet || meal.isOnTheDiet,
+      };
+
+      await conn('meals')
+        .update({ ...updatedMeal })
+        .where({ id: mealId });
 
       return rep.status(204).send();
     },
