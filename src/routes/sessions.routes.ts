@@ -180,6 +180,38 @@ export async function sessionsRoutes(app: FastifyInstance) {
     return rep.status(201).send();
   });
 
+  app.post('/logout', { preHandler: [verifyJWT] }, async (request, reply) => {
+    if (env.NODE_ENV === 'production') {
+      reply.clearCookie('@daily-diet:accessToken', {
+        domain: '*',
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+      });
+
+      reply.clearCookie('@daily-diet:refreshToken', {
+        domain: '*',
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+      });
+    } else {
+      reply.clearCookie('@daily-diet:accessToken', {
+        path: '/',
+        httpOnly: true,
+      });
+
+      reply.clearCookie('@daily-diet:refreshToken', {
+        path: '/',
+        httpOnly: true,
+      });
+    }
+
+    reply.send({ success: true });
+  });
+
   app.get(
     '/',
     { preHandler: verifyJWT },
