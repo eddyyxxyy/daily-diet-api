@@ -1,6 +1,7 @@
 import { compare } from 'bcrypt';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
+import { UserPayload } from '../@types/fastifyJwt';
 import { conn } from '../database';
 import { env } from '../env';
 import { verifyJWT } from '../middlewares/ensureAuthenticated';
@@ -180,37 +181,45 @@ export async function sessionsRoutes(app: FastifyInstance) {
     return rep.status(201).send();
   });
 
-  app.post('/logout', { preHandler: [verifyJWT] }, async (request, reply) => {
-    if (env.NODE_ENV === 'production') {
-      reply.clearCookie('@daily-diet:accessToken', {
-        domain: '*',
-        path: '/',
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-      });
+  app.post(
+    '/logout',
+    { preHandler: [verifyJWT] },
+    async (req: FastifyRequest, rep: FastifyReply) => {
+      if (env.NODE_ENV === 'production') {
+        rep.clearCookie('@daily-diet:accessToken', {
+          domain: '*',
+          path: '/',
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+        });
 
-      reply.clearCookie('@daily-diet:refreshToken', {
-        domain: '*',
-        path: '/',
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-      });
-    } else {
-      reply.clearCookie('@daily-diet:accessToken', {
-        path: '/',
-        httpOnly: true,
-      });
+        rep.clearCookie('@daily-diet:refreshToken', {
+          domain: '*',
+          path: '/',
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+        });
+      } else {
+        rep.clearCookie('@daily-diet:accessToken', {
+          path: '/',
+          httpOnly: true,
+        });
 
-      reply.clearCookie('@daily-diet:refreshToken', {
-        path: '/',
-        httpOnly: true,
-      });
-    }
+        rep.clearCookie('@daily-diet:refreshToken', {
+          path: '/',
+          httpOnly: true,
+        });
+      }
 
-    reply.send({ success: true });
-  });
+      const userInfo = req.user as UserPayload;
+
+      await conn('tokens').delete().where({ userId: userInfo.id });
+
+      rep.status(204).send();
+    },
+  );
 
   app.get(
     '/',
