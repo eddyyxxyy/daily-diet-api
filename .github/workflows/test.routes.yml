@@ -2,16 +2,17 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
 
 env:
-  NODE_ENV: "test"
-  DATABASE_CLIENT: "sqlite3"
-  DATABASE_URL: "./src/database/test.db"
-  PORT: "3334"
-  JWT_SECRET: "supersecret"
+  NODE_ENV: 'test'
+  DATABASE_CLIENT: 'sqlite3'
+  DATABASE_URL: './src/database/test.db'
+  PORT: '3334'
+  JWT_SECRET: 'supersecret'
+  FRONT_END_URL: 'https://frontend.com'
 
 jobs:
   build:
@@ -20,11 +21,11 @@ jobs:
       matrix:
         node-version: [18.x]
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm test
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
