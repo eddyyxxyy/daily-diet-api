@@ -36,7 +36,7 @@ E em desenvolvimento:
 - Vitest e;
 - SQLite3.
 
-**A aplicação já conta com a configuração do Cors, é só utilizar o arquivo `.env` para informar a URL do seu front-end (todas as variáveis de ambiente necessárias para desenvolvimento, produção e testes estão exemplificadas nos arquivos: [.env.example](./.env_example) e [.env.test.example](./.env.test.example)).**
+**A aplicação já conta com a configuração do Cors, é só utilizar o arquivo `.env` para informar a URL do seu front-end (todas as variáveis de ambiente necessárias para desenvolvimento, produção e testes estão exemplificadas nos arquivos: [.env.example](./.env_example) e [.env.test.example](./.env.test.example).**
 
 ## Pré-requisitos
 
