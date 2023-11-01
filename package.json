@@ -8,7 +8,7 @@
   "description": "API of the Daily Diet application, which will be responsible for the notes and reminders of the care we take with our free meals and diet",
   "main": "index.js",
   "scripts": {
-    "start": "pm2 start dist/server.js",
+    "start": "pm2 start dist/server.cjs",
     "build": "tsup src",
     "dev": "tsx watch src/server.ts",
     "knex": "node --no-warnings --loader tsx ./node_modules/.bin/knex",
