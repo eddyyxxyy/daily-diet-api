@@ -15,6 +15,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string(),
   PORT: z.coerce.number(),
   JWT_SECRET: z.string(),
+  FRONT_END_URL: z.string().url().startsWith('http'),
 });
 
 const _env = envSchema.safeParse(process.env);
